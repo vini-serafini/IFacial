@@ -1,0 +1,14 @@
+DB_HOST = 'localhost'
+DB_USER = 'root'
+DB_PASSWORD = ''
+DB_NAME = 'ifacial'
+
+PASTA_ALUNOS = 'data/alunos'
+PASTA_ENCODINGS = 'data/encodings'
+
+TEMPO_COOLDOWN = 30
+TEMPO_AUSENTE = 1.5
+
+TOLERANCIA_RECONHECIMENTO = 0.5
+
+ESCALA_FRAME = 0.5
