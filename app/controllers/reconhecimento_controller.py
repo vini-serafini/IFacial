@@ -35,6 +35,8 @@ class ReconhecimentoController:
 
     def __init__(self):
 
+        self.ultimo_resultado = None
+
         self.alunos = (
             AlunoService.carregar_alunos()
         )
@@ -109,6 +111,8 @@ class ReconhecimentoController:
 
             self.ultimo_status = False
 
+            self.ultimo_resultado = None
+
             # ==========================
             # PROCESSAR ROSTOS
             # ==========================
@@ -144,20 +148,21 @@ class ReconhecimentoController:
                         melhor_indice
                     ]
 
-                    liberado = (
-                        self.processar_aluno(
-                            aluno,
-                            agora
-                        )
+                    (
+                        liberado,
+                        resultado
+                    ) = self.processar_aluno(
+                        aluno,
+                        agora
                     )
 
                     self.ultimo_aluno = aluno
 
                     self.ultima_face = face
 
-                    self.ultimo_status = (
-                        liberado
-                    )
+                    self.ultimo_status = liberado
+
+                    self.ultimo_resultado = resultado
 
                 # ==========================
                 # DESCONHECIDO
@@ -170,6 +175,8 @@ class ReconhecimentoController:
                     self.ultima_face = face
 
                     self.ultimo_status = False
+
+                    self.ultimo_resultado = None
 
             # ==========================
             # REMOVER AUSENTES
@@ -187,7 +194,8 @@ class ReconhecimentoController:
                 frame,
                 self.ultima_face,
                 self.ultimo_aluno,
-                self.ultimo_status
+                self.ultimo_status,
+                self.ultimo_resultado
             )
 
             CameraView.mostrar(
@@ -216,6 +224,15 @@ class ReconhecimentoController:
         aluno,
         agora
     ):
+
+        # ==========================
+        # RESULTADO LIBERAÇÃO
+        # ==========================
+
+        resultado = (
+            LiberacaoService
+            .aluno_pode_sair(aluno)
+        )
 
         matricula = aluno.matricula
 
@@ -248,7 +265,7 @@ class ReconhecimentoController:
 
             if estado == 'liberado':
 
-                return True
+                return True, resultado
 
             # ==========================
             # BLOQUEADO
@@ -265,7 +282,7 @@ class ReconhecimentoController:
                 # nunca liberou antes
                 if ultimo_acesso is None:
 
-                    return False
+                    return False, resultado
 
                 tempo_passado = (
                     agora - ultimo_acesso
@@ -290,20 +307,17 @@ class ReconhecimentoController:
                         matricula
                     ] = agora
 
-                    return True
+                    return True, resultado
 
-                return False
+                return False, resultado
 
         # ==========================
         # REGRA ESCOLAR
         # ==========================
 
-        resultado = (
-            LiberacaoService
-            .aluno_pode_sair(aluno)
-        )
-
-        liberado = resultado["liberado"]
+        liberado = resultado[
+            "liberado"
+        ]
 
         bloqueado = not liberado
 
@@ -340,7 +354,7 @@ class ReconhecimentoController:
                 matricula
             ] = 'bloqueado'
 
-            return False
+            return False, resultado
 
         # ==========================
         # LIBERADO
@@ -358,7 +372,7 @@ class ReconhecimentoController:
             matricula
         ] = 'liberado'
 
-        return True
+        return True, resultado
 
     # ==========================
     # REMOVER AUSENTES

@@ -7,13 +7,12 @@ from app.config.settings import (
     ESCALA_FRAME
 )
 
-
 # ==========================
 # CONFIG
 # ==========================
 
 LARGURA = 400
-ALTURA = 700
+ALTURA = 740
 
 ALTURA_CAMERA = 500
 
@@ -157,7 +156,8 @@ def desenhar_interface(
     frame,
     face,
     aluno,
-    liberado
+    liberado,
+    resultado
 ):
 
     canvas = np.full(
@@ -265,6 +265,9 @@ def desenhar_interface(
         'BLOQUEADO'
     )
 
+    # ==========================
+    # INFORMAÇÕES DO ALUNO
+    # ==========================
 
     if aluno is not None:
 
@@ -288,6 +291,10 @@ def desenhar_interface(
             2
         )
 
+    # ==========================
+    # STATUS
+    # ==========================
+
     cv2.putText(
         canvas,
         f'Status: {status}',
@@ -297,6 +304,34 @@ def desenhar_interface(
         (255, 255, 255),
         2
     )
+
+    # ==========================
+    # AULA ATUAL
+    # ==========================
+
+    if (
+        resultado is not None
+        and
+        "materia_atual" in resultado
+    ):
+
+        aula = resultado[
+            "materia_atual"
+        ]
+
+        cv2.putText(
+            canvas,
+            f'Aula: {aula}',
+            (20, 680),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.65,
+            (255, 255, 255),
+            2
+        )
+
+    # ==========================
+    # DATA E HORA
+    # ==========================
 
     cv2.putText(
         canvas,

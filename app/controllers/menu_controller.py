@@ -23,7 +23,7 @@ class MenuController:
             match opcao:
 
                 case '1':
-                    CadastroController().iniciar()
+                    CadastroController().executar()
                 case '2':
                     ReconhecimentoController().executar()
                 case '3':
